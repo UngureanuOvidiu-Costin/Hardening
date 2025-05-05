@@ -1,4 +1,18 @@
 ## Exchange Server
+
+### ProxyLogon
+https://github.com/RickGeex/ProxyLogon
+
+### ProxyShell
+[https://github.com/RickGeex/ProxyLogon](https://github.com/kh4sh3i/ProxyShell)
+
+### CVE-2020-0688
+https://github.com/MrTiz/CVE-2020-0688
+https://nvd.nist.gov/vuln/detail/cve-2020-0688
+
+### CVE-2021-42321
+https://github.com/DarkSprings/CVE-2021-42321
+
 ### CVE-2021-26855
 1. Documentation: https://microsoft.github.io/CSS-Exchange/Security/Test-ProxyLogon/
 2. The script from the documentation
