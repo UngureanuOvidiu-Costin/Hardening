@@ -113,6 +113,35 @@ Get-ChildItem $officeAddInRegistryPath -Recurse |
     }
 
 Write-Output $addIns
+Write-Output "-----------------------------------------------------------"
 
+############################# AppInit DLL ############################
+$appInitDLLPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows"
 
-############################# 
+if (Test-Path $appInitDLLPath) {
+    $keys = Get-ItemProperty -Path $appInitDLLPath
+
+    $appInit = [string]($keys.AppInit_DLLs -or "")
+    $load = [int]($keys.LoadAppInit_DLLs -or 0)
+    $requireSigned = [int]($keys.RequireSignedAppInit_DLLs -or 1)  # It is not present by default, we assume that it is enabled, so we use 1
+
+    if (-not [string]::IsNullOrWhiteSpace($appInit)) {
+        Write-Output "AppInit_DLLs is set to: $appInit"
+    } else {
+        Write-Output "AppInit_DLLs is not set (empty)."
+    }
+
+    if ($load -eq 1) {
+        Write-Output "LoadAppInit_DLLs = 1 (enabled)."
+    } else {
+        Write-Output "LoadAppInit_DLLs != 1 (disabled)."
+    }
+
+    if ($requireSigned -eq 1) {
+        Write-Output "RequireSignedAppInit_DLLs = 1 (only signed DLLs allowed)."
+    } else {
+        Write-Output "RequireSignedAppInit_DLLs != 1 (unsigned DLLs may be allowed)."
+    }
+} else {
+    Write-Output "Registry path not found: $appInitDLLPath"
+}
