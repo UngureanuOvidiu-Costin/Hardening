@@ -145,3 +145,30 @@ if (Test-Path $appInitDLLPath) {
 } else {
     Write-Output "Registry path not found: $appInitDLLPath"
 }
+
+
+###################### Winlogon ########################
+$winlogonPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
+
+if(Test-Path $winlogonPath) {
+    $keys = Get-ItemProperty -Path $winlogonPath
+    
+    if($keys.PSObject.Properties.Name -contains "Shell") {
+        $shellValue = $keys.Shell;
+        if($shellValue -ne "explorer.exe") {
+            Write-Output "Shell does not have default value: $($shellValue)!!!"
+        }
+    } else {
+        Write-Output "Shell key not found ? Strange"
+    }
+
+    if($keys.PSObject.Properties.Name -contains "UserInit") {
+        $userInitValue = $keys.Userinit;
+        if($userInitValue -ne "C:\Windows\system32\userinit.exe,") {
+            Write-Output "UserInit does not have default value: $($userInitValue)!!!"
+        }
+    } else {
+        Write-Output "UserInit key not found ? Strange"
+    }
+}
+
