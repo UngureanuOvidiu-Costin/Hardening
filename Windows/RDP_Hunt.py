@@ -54,7 +54,7 @@ def rdp_remote_desktop_services(filepath):
 
             print(f"[{time_created}] Client ip address: {remote_ip_address}")
 
-def rdp_remote_desktop_connection_manager(filepath):
+def rdp_remote_desktop_remote_connection_manager(filepath):
     namespace = "http://schemas.microsoft.com/win/2004/08/events/event"
     USER_LOGIN_ID = "1149"
 
@@ -74,12 +74,31 @@ def rdp_remote_desktop_connection_manager(filepath):
             print(f"[{time_created}] {username} from {remote_host} - {remote_ip}")
 
 
+def rdp_remote_desktop_local_session_manager(filepath):
+    namespace = "http://schemas.microsoft.com/win/2004/08/events/event"
+    EVENT_IDS = ["24", "25"]  # 24 (session disconnected from client side) 25 (session reconnected)
+
+    with Evtx(filepath) as log:
+        for record in log.records():
+            root = etree.fromstring(record.xml().encode())
+
+            event_id = root.findtext(".//{*}EventID")
+            if event_id not in EVENT_IDS:
+                continue
+
+            time_created = root.find(".//{*}TimeCreated").get("SystemTime")
+            username = root.find(".//{*}User").text
+            rdp_session = root.find(".//{*}SessionID").text
+            remote_ip = root.find(".//{*}Address").text
+
+            print(f"[{time_created}] {username} with session {rdp_session} - {remote_ip}")
+
+
 def main():
     rdp_security("security.evtx")  # This might take a while
-    rdp_remote_desktop_services("microsoft-windows-remotedesktopservices-rdpcorets%4operational.evtx")
-    rdp_remote_desktop_connection_manager("microsoft-windows-terminalservices-remoteconnectionmanager4operational.evtx")
+    #rdp_remote_desktop_services("microsoft-windows-remotedesktopservices-rdpcorets%4operational.evtx")
+    rdp_remote_desktop_remote_connection_manager("microsoft-windows-terminalservices-remoteconnectionmanager4operational.evtx")
+    rdp_remote_desktop_local_session_manager("microsoft-windows-terminalservices-localsessionmanager4operational.evtx")
 
 if __name__ == "__main__":
     main()
-
- 
